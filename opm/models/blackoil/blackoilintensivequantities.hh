@@ -97,9 +97,12 @@ class BlackOilIntensiveQuantities
     enum { compositionSwitchIdx = Indices::compositionSwitchIdx };
 
     static const bool compositionSwitchEnabled = Indices::gasEnabled;
+    //static const bool compositionSwitchEnabled = true; //for testing
     static const bool waterEnabled = Indices::waterEnabled;
-
-    using Toolbox = MathToolbox<Evaluation>;
+    static const bool gasEnabled = Indices::gasEnabled;
+    static const bool oilEnabled = Indices::oilEnabled;
+    
+    using Toolbox = Opm::MathToolbox<Evaluation>;
     using DimMatrix = Dune::FieldMatrix<Scalar, dimWorld, dimWorld>;
     using FluxIntensiveQuantities = typename FluxModule::FluxIntensiveQuantities;
     using FluidState = BlackOilFluidState<Evaluation, FluidSystem, enableTemperature, enableEnergy, compositionSwitchEnabled,  enableBrine, Indices::numPhases >;
@@ -166,6 +169,11 @@ public:
                 // -> oil-water case
                 Sg = 0.0;
             }
+        }
+        if (gasEnabled && waterEnabled && !oilEnabled) {
+            // two phase gas water system
+            // for testing
+            Sg = 1.0 - Sw; //for testing
         }
 
         Valgrind::CheckDefined(Sg);
